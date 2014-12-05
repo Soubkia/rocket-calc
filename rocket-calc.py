@@ -42,6 +42,7 @@ class variables:
 
 	"""
 	r, P_c, T_c, L, F, I_sp = None, None, None, None, None, None
+	w_t, w_o, w_f = None, None, None
 
 	def __init__(self, mixture_ratio, chamber_pressure, chamber_gas_temperature, characteristic_chamber_length, thrust, Isp):
 		self.r = mixture_ratio
@@ -49,7 +50,11 @@ class variables:
 		self.T_c = chamber_gas_temperature
 		self.L = characteristic_chamber_length
 		self.F = thrust
-		self.I_sp = Isp 
+		self.I_sp = Isp
+		#Derived From Given
+		self.w_t = self.total_flow_rate()
+		self.w_o = self.oxidizer_flow_rate()
+		self.w_f = self.fuel_flow_rate()
 
 	"""
 
@@ -104,6 +109,28 @@ class variables:
 # 	Q, q, A, w_w, c_p, T, T_i = None, None, None, None, None, None, None
 
 class nozzle:
+	"""
+
+	T_t = temperature of the gases at the nozzle throat <units needed>
+	P_t = gas pressure at the nozzle throat
+	A_t = nozzle throat cross-sectional area <units needed>
+	D_t = nozzle throat diameter
+	A_e = the nozzle exit cross-sectional area corresponding to the exit Mach number resulting from the choice of chamber pressure <units needed>
+	D_e = nozzle exit diameter
+
+	"""
+	T_t, P_t, A_t, D_t, A_e, D_e = None, None, None, None, None, None
+
+	def __init__(self, variables, constants):
+		self.T_t = self.tempurature_of_gases_at_nozzle_throat(variables.T_c, constants)
+		self.P_t = self.gas_pressure_at_nozzle_throat(variables.P_c, constants)
+		self.A_t = self.nozzle_throat_cross_sectional_area(variables.w_t, self.P_t, self.T_t, constants)
+		self.D_t = self.nozzle_throat_diameter(self.A_t)
+		self.M_e = self.mach_number(variables.P_c, constants) #broken
+		self.A_e = self.nozzle_exit_cross_sectional_area(self.A_t, self.M_e, constants) #broken
+		self.D_e = self.nozzle_exit_diameter(self.A_e)
+
+
 	"""
 	
 	Design Equation:
@@ -165,7 +192,7 @@ class nozzle:
 
 	"""
 	def mach_number(self, P_c, constants):
-		return ((2)/(constants.y-1))*(((P_c/constants.P_atm)**((constants.y-1)/(constants.y))) - 1) 
+		return math.sqrt(((2)/(constants.y-1))*(((P_c/constants.P_atm)**((constants.y-1)/(constants.y))) - 1)) 
 	"""
 
 	Design Equation:
@@ -180,6 +207,30 @@ class nozzle:
 	"""
 	def nozzle_exit_cross_sectional_area(self, A_t, M_e, constants):
 		return (A_t/M_e)*((1 + ((constants.y - 1)/(2))*M_e**2)/((constants.y + 1)/(2)))**((constants.y+1)/(2*(constants.y-1)))
+	"""
+
+	Design Equation: 
+		D_t = sqrt((4*A_t)/pi)
+
+	Variables:
+		D_t = nozzle throat diameter
+		A_t = nozzle throat cross-sectional area <units needed>
+
+	"""
+	def nozzle_throat_diameter(self, A_t):
+		return math.sqrt((4*A_t)/(3.14))
+	"""
+
+	Design Equation:
+		D_e = sqrt((4*A_e)/pi)
+
+	Variables:
+		D_e = nozzle exit diameter
+		A_e = the nozzle exit cross-sectional area corresponding to the exit Mach number resulting from the choice of chamber pressure <units needed>
+
+	"""
+	def nozzle_exit_diameter(self, A_e):
+		return math.sqrt((4*A_e)/(3.14))
 
 class combustion_chamber:
 	"""
@@ -309,7 +360,7 @@ class injector:
 		return C_d*math.sqrt((2*g_c)*(delta_P/rho))
 
 def main():
-    print("Hello World")
+    print("===========Begin Report===========")
     """
     
     Known Values:
@@ -324,24 +375,28 @@ def main():
     var = variables(2.5, 300, 6202, 60, 20, 260)  
     con = constants("hydrocarbon", "gaseous oxygen")
 
-    w_t = var.total_flow_rate()
-    print("total flow rate: " + str(var.total_flow_rate()))
-    w_f = var.fuel_flow_rate()
-    print("fuel flow rate: " + str(var.fuel_flow_rate()))
-    w_o = var.oxidizer_flow_rate()
-    print("oxidizer flow rate: " + str(var.oxidizer_flow_rate()))
+    w_t = var.w_t
+    print("total flow rate: " + str(w_t))
+    w_f = var.w_f
+    print("fuel flow rate: " + str(w_f))
+    w_o = var.w_o
+    print("oxidizer flow rate: " + str(w_o))
 
-    noz = nozzle()
-    T_t = noz.tempurature_of_gases_at_nozzle_throat(var.T_c, con)
-    print("tempurature of gases at nozzle throat: " + str(noz.tempurature_of_gases_at_nozzle_throat(var.T_c, con)))
-    P_t = noz.gas_pressure_at_nozzle_throat(var.P_c, con)
-    print ("gas presure at nozzle throat: " + str(noz.gas_pressure_at_nozzle_throat(var.P_c, con)))
-    A_t = noz.nozzle_throat_cross_sectional_area(w_t, P_t, T_t, con)
-    print ("nozzle throat cross-sectional area: " + str(noz.nozzle_throat_cross_sectional_area(w_t, P_t, T_t, con)))
-    M_e = noz.mach_number(var.P_c, con)
-    print ("mach number: " + str(noz.mach_number(var.P_c, con)))
-    A_e = noz.nozzle_exit_cross_sectional_area(A_t, M_e, con)
-    print ("nozzle exit cross-sectional area: *broken*" + str(noz.nozzle_exit_cross_sectional_area(A_t, M_e, con)))
+    noz = nozzle(var, con)
+    T_t = noz.T_t
+    print("tempurature of gases at nozzle throat: " + str(T_t))
+    P_t = noz.P_t
+    print("gas presure at nozzle throat: " + str(P_t))
+    A_t = noz.A_t
+    print("nozzle throat cross-sectional area: " + str(A_t))
+    D_t = noz.D_t
+    print("nozzle throat diameter: " + str(D_t))
+    M_e = noz.M_e
+    print("mach number: " + str(M_e))
+    A_e = noz.A_e
+    print("nozzle exit cross-sectional area: " + str(A_e))
+    D_e = noz.D_e
+    print("nozzle exit diameter: " + str(D_e))
 
     com = combustion_chamber()
     
