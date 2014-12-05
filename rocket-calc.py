@@ -130,7 +130,6 @@ class nozzle:
 		self.A_e = self.nozzle_exit_cross_sectional_area(self.A_t, self.M_e, constants) #broken
 		self.D_e = self.nozzle_exit_diameter(self.A_e)
 
-
 	"""
 	
 	Design Equation:
@@ -235,6 +234,27 @@ class nozzle:
 class combustion_chamber:
 	"""
 
+	V_c = the volume of the combustion chamber
+	D_c = chamber diameter (we assume this is five times the nozzle throat diameter)
+	A_c = the combustion chamber cross-sectional area
+	L_c = chamber length
+	t_w = chamber wall thickness
+	S = allowable working stress on the combustion chamber wall (psi) based on material
+
+	"""
+	V_c, D_c, A_c, L_c, S, t_w = None, None, None, None, None, None
+
+	def __init__(self, variables, constants, nozzle, chamber_material):
+		self.V_c = self.combustion_chamber_volume(nozzle.A_t, variables.L)
+		self.D_c = nozzle.D_t*5
+		self.A_c = self.combustion_chamber_cross_sectional_area(self.D_c)
+		self.L_c = self.chamber_length(self.V_c, self.D_c, self.A_c)
+		if (chamber_material == "copper"):
+			self.S = 8000
+		self.t_w = self.combustion_chamber_thickness(variables.P_c, self.D_c, self.S) 
+
+	"""
+
 	Design Equation:
 		L* = V_c/A_t
 
@@ -246,6 +266,19 @@ class combustion_chamber:
 	"""
 	def characteristic_chamber_length(self, V_c, A_t):
 		return (V_c/A_t)
+	"""
+
+	Design Equation:
+		L_c = V_c/(D_c * A_c)
+
+	Variables:
+		L_c = chamber length
+		D_c = chamber diameter (we assume this is five times the nozzle throat diameter)
+		A_c = the combustion chamber cross-sectional area
+
+	"""
+	def chamber_length(self, V_c, D_c, A_c):
+		return ((V_c)/(D_c*A_c))
 	"""
 
 	Design Equation:
@@ -272,7 +305,20 @@ class combustion_chamber:
 
 	"""
 	def combustion_chamber_volume(self, A_c, L_c, convergent_volume):
-		return A_c* L_c + convergent_volume
+		return A_c*L_c + convergent_volume
+	"""
+
+	Design Equation:
+		V_c = L* A_t
+
+	Variables:
+		V_c = the volume of the combustion chamber
+		A_t = the nozzle throat area (in^2)
+		L* = the chamber volume required for complete combustion (characteristic chamber length)
+
+	"""
+	def combustion_chamber_volume(self, A_t, L):
+		return L*A_t
 	"""
 
 	Design Equation:
@@ -398,8 +444,17 @@ def main():
     D_e = noz.D_e
     print("nozzle exit diameter: " + str(D_e))
 
-    com = combustion_chamber()
-    
+    com = combustion_chamber(var, con, noz, "copper")
+    V_c = com.V_c
+    print("combustion chamber volume: " + str(V_c))
+    D_c = com.D_c
+    print("combustion chamber diameter: " + str(D_c))
+    A_c = com.A_c
+    print("combustion chamber area: " + str(A_c))
+    L_c = com.L_c
+    print("combustion chamber length: " + str(L_c))
+    t_w = com.t_w
+    print("combustion chamber wall thickness: " + str(t_w))    
 
 if __name__ == "__main__":
     main()
