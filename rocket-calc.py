@@ -240,8 +240,10 @@ class combustion_chamber:
 	L_c = chamber length
 	t_w = chamber wall thickness
 	S = allowable working stress on the combustion chamber wall (psi) based on material
+	material = material combustion chamber is made of, only copper supported currently
 
 	"""
+	material = None
 	V_c, D_c, A_c, L_c, S, t_w = None, None, None, None, None, None
 
 	def __init__(self, variables, constants, nozzle, chamber_material):
@@ -251,7 +253,8 @@ class combustion_chamber:
 		self.L_c = self.chamber_length(self.V_c, self.D_c, self.A_c)
 		if (chamber_material == "copper"):
 			self.S = 8000
-		self.t_w = self.combustion_chamber_thickness(variables.P_c, self.D_c, self.S) 
+		self.t_w = self.combustion_chamber_thickness(variables.P_c, self.D_c, self.S)
+		self.material = chamber_material 
 
 	"""
 
@@ -356,6 +359,26 @@ class combustion_chamber:
 class engine_cooling:
 	"""
 
+	A = heat transfer area, in^2
+	q = average heat transfer rate for coolant, Btu/in^2-sec
+	Q = total heat transferred, Btu/sec
+	w_cool = coolant flow rate, lb/sec
+	v_w = flow velocity of the coolant, ft/sec
+	delta_D = annular flow passage width, in
+
+	"""
+	A, q, Q, w_cool, v_w, delta_D = None, None, None, None, None, None
+	#To Do: take the coolant on init
+	def __init__(self, variables, constants, nozzle, combustion_chamber):
+		self.A = self.heat_transfer_area(combustion_chamber.D_c, combustion_chamber.t_w, combustion_chamber.L_c, 0)*1.1
+		if(combustion_chamber.material == "copper"):
+			self.q = 3
+		self.Q = self.total_heat_transfer_from_chamber_to_coolant(self.q, self.A)
+		self.w_cool = self.coolant_flow_rate(self.Q, 40) #To Do: add desired tempurature rise of coolant to variables class
+
+
+	"""
+
 	Design Equation:
 		Q = q*A = w_w * c_p (T - T_i)
 
@@ -371,6 +394,50 @@ class engine_cooling:
 	"""
 	def total_heat_transfer_from_chamber_to_coolant(self, w_w, c_p, T, T_i):
 		return ((w_w*c_p)*(T-T_i))
+	"""
+
+	Design Equation:
+		Q = q*A
+
+	Variables:
+		Q = total heat transferred, Btu/sec
+		q = average heat transfer rate of chamber, Btu/in^2-sec
+		A = heat transfer area, in^2
+
+	"""
+	def total_heat_transfer_from_chamber_to_coolant(self, q, A):
+		return q*A
+	"""
+
+	Design Equation:
+		A = pi (D_c + 2*t_w)(L_c) + area of nozzle cone
+
+	Variables:
+		A = heat transfer area
+		D_c = combustion chamber diameter
+		t_w = combustion chamber wall thickness
+		L_c = combustion chamber length
+
+	Note: the area of the nozzle cone up to the throat can be assumed to be about 10 percent of the chamber surface area
+	if it is not known 
+
+	"""
+	def heat_transfer_area(self, D_c, t_w, L_c, area_of_nozzle_cone):
+		return 3.14*(D_c + 2*t_w)*L_c + area_of_nozzle_cone
+	"""
+
+	Design Equation:
+		w_cool = Q/delta_T
+
+	Variables:
+		w_cool = coolant flow rate, lb/sec
+		Q = total heat transferred, Btu/sec
+		delta_T = desired temperature rise of the coolant, °F
+
+	"""
+	def coolant_flow_rate(self, Q, delta_T):
+		return (Q/delta_T)
+
 
 class injector:
 	"""
@@ -405,8 +472,16 @@ class injector:
 	def injection_velocity(self, delta_P, rho, C_d=0.6):
 		return C_d*math.sqrt((2*g_c)*(delta_P/rho))
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+
 def main():
-    print("===========Begin Report===========")
+    print(bcolors.HEADER + "===========Begin Report===========" + bcolors.ENDC)
     """
     
     Known Values:
@@ -454,7 +529,7 @@ def main():
     L_c = com.L_c
     print("combustion chamber length: " + str(L_c))
     t_w = com.t_w
-    print("combustion chamber wall thickness: " + str(t_w))    
+    print("combustion chamber wall thickness: " + str(t_w))
 
 if __name__ == "__main__":
     main()
