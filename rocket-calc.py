@@ -365,16 +365,23 @@ class engine_cooling:
 	w_cool = coolant flow rate, lb/sec
 	v_w = flow velocity of the coolant, ft/sec
 	delta_D = annular flow passage width, in
+	rho_cool = density of coolant, lb/ft^3
+	delta_T = allowable/desired rise in temperature of coolant (defaults to 40), °F
 
 	"""
-	A, q, Q, w_cool, v_w, delta_D = None, None, None, None, None, None
-	#To Do: take the coolant on init
-	def __init__(self, variables, constants, nozzle, combustion_chamber):
+	A, q, Q, w_cool, v_w, delta_D, rho_cool, delta_T = None, None, None, None, None, None, None, None
+
+	def __init__(self, variables, constants, nozzle, combustion_chamber, coolant, coolant_tempurature_rise=40):
+		if(coolant == "water"):
+			self.rho_cool = 62.4
+		self.coolant_tempurature_rise = coolant_tempurature_rise
+
 		self.A = self.heat_transfer_area(combustion_chamber.D_c, combustion_chamber.t_w, combustion_chamber.L_c, 0)*1.1
 		if(combustion_chamber.material == "copper"):
 			self.q = 3
 		self.Q = self.total_heat_transfer_from_chamber_to_coolant(self.q, self.A)
-		self.w_cool = self.coolant_flow_rate(self.Q, 40) #To Do: add desired tempurature rise of coolant to variables class
+		self.w_cool = self.coolant_flow_rate(self.Q, self.coolant_tempurature_rise)
+		
 
 
 	"""
@@ -455,7 +462,7 @@ class injector:
 
 	"""
 	def propellant_flow_rate(self, A, rho, delta_P, C_d=0.6):
-		return (C_d*A)*math.sqrt(2*32.2*rho*delta_P) 
+		return (C_d*A)*math.sqrt(2*32.2*rho*delta_P)
 	"""
 
 	Design Equation:
