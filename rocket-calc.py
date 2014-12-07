@@ -356,22 +356,24 @@ class combustion_chamber:
 	def combustion_chamber_thickness(self, P, D, S):
 		return ((P*D)/(S*2))
 
-class engine_cooling:
+class engine_cooling: #This may require some organizational rethinking. Maybe coolant should be selected at the beginning. 
 	"""
 
 	A = heat transfer area, in^2
 	q = average heat transfer rate for coolant, Btu/in^2-sec
 	Q = total heat transferred, Btu/sec
 	w_cool = coolant flow rate, lb/sec
-	v_w = flow velocity of the coolant, ft/sec
+	v_cool = flow velocity of the coolant, ft/sec
+	D_1 = the outer diameter of the combustion chamber, in
+	D_2 = the inner diameter of the outer jacket, in
 	delta_D = annular flow passage width, in
 	rho_cool = density of coolant, lb/ft^3
 	delta_T = allowable/desired rise in temperature of coolant (defaults to 40), °F
 
 	"""
-	A, q, Q, w_cool, v_w, delta_D, rho_cool, delta_T = None, None, None, None, None, None, None, None
+	A, q, Q, w_cool, v_cool, D_1, D_2, delta_D, rho_cool, delta_T = None, None, None, None, None, None, None, None, None, None
 
-	def __init__(self, variables, constants, nozzle, combustion_chamber, coolant, coolant_tempurature_rise=40):
+	def __init__(self, variables, constants, nozzle, combustion_chamber, coolant, coolant_tempurature_rise=40, v_cool=30):
 		if(coolant == "water"):
 			self.rho_cool = 62.4
 		self.coolant_tempurature_rise = coolant_tempurature_rise
@@ -381,8 +383,10 @@ class engine_cooling:
 			self.q = 3
 		self.Q = self.total_heat_transfer_from_chamber_to_coolant(self.q, self.A)
 		self.w_cool = self.coolant_flow_rate(self.Q, self.coolant_tempurature_rise)
-		
-
+		self.v_cool = v_cool
+		self.D_1 = self.combustion_chamber_outer_diameter(combustion_chamber.D_c, combustion_chamber.t_w)
+		self.D_2 = self.cooling_jacket_inner_diameter(self.w_cool, self.v_cool, self.rho_cool, self.D_1)
+		self.delta_D = self.D_2 - self.D_1
 
 	"""
 
@@ -444,6 +448,34 @@ class engine_cooling:
 	"""
 	def coolant_flow_rate(self, Q, delta_T):
 		return (Q/delta_T)
+	"""
+
+	Design Equation:
+		D_1 = D_c + 2*t_w
+
+	Variables:
+		D_1 = the outer diameter of the combustion chamber, in
+		D_c = combustion chamber diameter, in
+		t_w = combustion chamber wall thickness, in
+
+	"""
+	def combustion_chamber_outer_diameter(self, D_c, t_w):
+		return (D_c + 2*t_w)
+	"""
+
+	Design Equation:
+		D_2 = sqrt((4*w_cool/v_cool*rho_cool*pi) + (D_1^2))
+
+	Variables:
+		D_2 = the inner diameter of the outer jacket, in
+		w_cool = coolant flow rate, lb/sec
+		v_cool = flow velocity of the coolant, ft/sec
+		rho_cool = density of coolant, lb/ft^3
+		D_1 = the outer diameter of the combustion chamber, in
+
+	"""
+	def cooling_jacket_inner_diameter(self, w_cool, v_cool, rho_cool, D_1):
+		return math.sqrt(((4*w_cool)/(v_cool*rho_cool*3.14)) + D_1**2)
 
 
 class injector:
@@ -503,6 +535,7 @@ def main():
     var = variables(2.5, 300, 6202, 60, 20, 260)  
     con = constants("hydrocarbon", "gaseous oxygen")
 
+    print(bcolors.OKGREEN + "===========Flow Rates===========" + bcolors.ENDC)
     w_t = var.w_t
     print("total flow rate: " + str(w_t))
     w_f = var.w_f
@@ -510,6 +543,7 @@ def main():
     w_o = var.w_o
     print("oxidizer flow rate: " + str(w_o))
 
+    print(bcolors.WARNING + "===========Nozzle===========" + bcolors.ENDC)
     noz = nozzle(var, con)
     T_t = noz.T_t
     print("tempurature of gases at nozzle throat: " + str(T_t))
@@ -526,6 +560,7 @@ def main():
     D_e = noz.D_e
     print("nozzle exit diameter: " + str(D_e))
 
+    print(bcolors.FAIL + "===========Combustion Chamber===========" + bcolors.ENDC)
     com = combustion_chamber(var, con, noz, "copper")
     V_c = com.V_c
     print("combustion chamber volume: " + str(V_c))
@@ -537,6 +572,26 @@ def main():
     print("combustion chamber length: " + str(L_c))
     t_w = com.t_w
     print("combustion chamber wall thickness: " + str(t_w))
+
+    print(bcolors.OKBLUE + "===========Engine Cooling===========" + bcolors.ENDC)
+    eng_cool = engine_cooling(var, con, noz, com, "water")
+    A = eng_cool.A
+    print("heat transfer area: " + str(A))
+    q = eng_cool.q
+    print("average heat transfer rate for coolant: " + str(q))
+    Q = eng_cool.Q
+    print("total heat transferred: " + str(Q))
+    w_cool = eng_cool.w_cool
+    print("coolant flow rate: " + str(w_cool))
+    v_cool = eng_cool.v_cool
+    print("flow velocity of coolant: " + str(v_cool))
+    D_1 = eng_cool.D_1
+    print("outer diameter of the combustion chamber: " + str(D_1))
+    D_2 = eng_cool.D_2
+    print("inner diameter of cooling jacket: " + str(D_2))
+    delta_D = eng_cool.delta_D
+    print("annular flow passage width: " + str(delta_D))
+
 
 if __name__ == "__main__":
     main()
