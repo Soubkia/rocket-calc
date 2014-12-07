@@ -455,7 +455,7 @@ class injector:
 
 	"""
 	def propellant_flow_rate(self, A, rho, delta_P, C_d=0.6):
-		return (C_d*A)*math.sqrt(2*32.2*rho*delta_P)
+		return (C_d*A)*math.sqrt(2*32.2*rho*delta_P) 
 	"""
 
 	Design Equation:
