@@ -384,9 +384,9 @@ class engine_cooling: #This may require some organizational rethinking. Maybe co
 		self.Q = self.total_heat_transfer_from_chamber_to_coolant(self.q, self.A)
 		self.w_cool = self.coolant_flow_rate(self.Q, self.coolant_tempurature_rise)
 		self.v_cool = v_cool
-		self.D_1 = self.combustion_chamber_outer_diameter(combustion_chamber.D_c, combustion_chamber.t_w)
-		self.D_2 = self.cooling_jacket_inner_diameter(self.w_cool, self.v_cool, self.rho_cool, self.D_1)
-		self.delta_D = self.D_2 - self.D_1
+		self.D_1 = self.combustion_chamber_outer_diameter(combustion_chamber.D_c, combustion_chamber.t_w) #1.3875
+		self.D_2 = self.cooling_jacket_inner_diameter(self.w_cool, self.v_cool, self.rho_cool, self.D_1) #1.475
+		self.delta_D = self.D_2 - self.D_1 
 
 	"""
 
@@ -451,6 +451,19 @@ class engine_cooling: #This may require some organizational rethinking. Maybe co
 	"""
 
 	Design Equation:
+		v_cool = w_cool/rho_cool*A
+
+	Variables:
+		v_cool = flow velocity of the coolant, ft/sec
+		w_cool = coolant flow rate, lb/sec
+		A = heat transfer area, in^2
+
+	"""
+	def coolant_velocity(self, w_cool, rho_cool, A):
+		return w_cool/(rho_cool*A)
+	"""
+
+	Design Equation:
 		D_1 = D_c + 2*t_w
 
 	Variables:
@@ -475,7 +488,7 @@ class engine_cooling: #This may require some organizational rethinking. Maybe co
 
 	"""
 	def cooling_jacket_inner_diameter(self, w_cool, v_cool, rho_cool, D_1):
-		return math.sqrt(((4*w_cool)/(v_cool*rho_cool*3.14)) + D_1**2)
+		return math.sqrt(((4*w_cool)/(v_cool*rho_cool*3.14)) + (D_1/12)**2)*12 #Convert from ft to inches
 
 
 class injector:
