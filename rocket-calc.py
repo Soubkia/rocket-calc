@@ -17,7 +17,7 @@ class constants:
 	R = gas constant <units needed>
 	y = heat capacity ratio or adiabatic index or ratio of specific heats
 	g_c = earth gravitational constant <units needed>
-	P_atm = atmospheric pressure (psi)
+	P_atm = atmospheric pressure, psi
 
 	"""
 	R = 65
@@ -34,11 +34,11 @@ class variables:
 	"""
 
 	r = O/F ratio (or mixture ratio)
-	P_c = chamber pressure (psi sea level)
-	T_c = chamber gas temperature (°F/R)
+	P_c = chamber pressure, psi sea level
+	T_c = chamber gas temperature, °F/R
 	L* = the chamber volume required for complete combustion (characteristic chamber length)
 	F = thrust
-	I_sp = specific impulse performance of fuel oxidizer combination as a result of chamber pressure and mixture ratio
+	I_sp = specific impulse performance of fuel oxidizer combination as a result of chamber pressure and mixture ratio, seconds
 
 	"""
 	r, P_c, T_c, L, F, I_sp = None, None, None, None, None, None
@@ -62,9 +62,9 @@ class variables:
 		w_t = F/I_sp
 
 	Variables:
-		w_t = total flow rate
+		w_t = total flow rate, lb/sec
 		F = thrust
-		I_sp = specific impulse
+		I_sp = specific impulse, seconds
 
 	"""
 	def total_flow_rate(self):
@@ -75,8 +75,8 @@ class variables:
 		w_o = w_t*r / (r + 1)
 
 	Variables:
-		w_o = oxidizer flow rate
-		w_t = total flow rate
+		w_o = oxidizer flow rate, lb/sec
+		w_t = total flow rate, lb/sec
 		r = O/F ratio (or mixture ratio)
 	"""
 	def oxidizer_flow_rate(self):
@@ -87,8 +87,8 @@ class variables:
 		w_f = w_t / (r + 1)
 
 	Variables:
-		w_f = fuel flow rate
-		w_t = total flow rate
+		w_f = fuel flow rate, lb/sec
+		w_t = total flow rate, lb/sec
 		r = O/F ratio (or mixture ratio)
 	"""
 	def fuel_flow_rate(self):
@@ -114,9 +114,9 @@ class nozzle:
 	T_t = temperature of the gases at the nozzle throat <units needed>
 	P_t = gas pressure at the nozzle throat
 	A_t = nozzle throat cross-sectional area <units needed>
-	D_t = nozzle throat diameter
+	D_t = nozzle throat diameter, in
 	A_e = the nozzle exit cross-sectional area corresponding to the exit Mach number resulting from the choice of chamber pressure <units needed>
-	D_e = nozzle exit diameter
+	D_e = nozzle exit diameter, in
 
 	"""
 	T_t, P_t, A_t, D_t, A_e, D_e = None, None, None, None, None, None
@@ -549,61 +549,38 @@ def main():
     con = constants("hydrocarbon", "gaseous oxygen")
 
     print(bcolors.OKGREEN + "===========Flow Rates===========" + bcolors.ENDC)
-    w_t = var.w_t
-    print("total flow rate: " + str(w_t))
-    w_f = var.w_f
-    print("fuel flow rate: " + str(w_f))
-    w_o = var.w_o
-    print("oxidizer flow rate: " + str(w_o))
+    print("total flow rate: " + str(var.w_t))
+    print("fuel flow rate: " + str(var.w_f))
+    print("oxidizer flow rate: " + str(var.w_o))
 
     print(bcolors.WARNING + "===========Nozzle===========" + bcolors.ENDC)
     noz = nozzle(var, con)
-    T_t = noz.T_t
-    print("tempurature of gases at nozzle throat: " + str(T_t))
-    P_t = noz.P_t
-    print("gas presure at nozzle throat: " + str(P_t))
-    A_t = noz.A_t
-    print("nozzle throat cross-sectional area: " + str(A_t))
-    D_t = noz.D_t
-    print("nozzle throat diameter: " + str(D_t))
-    M_e = noz.M_e
-    print("mach number: " + str(M_e))
-    A_e = noz.A_e
-    print("nozzle exit cross-sectional area: " + str(A_e))
-    D_e = noz.D_e
-    print("nozzle exit diameter: " + str(D_e))
+    print("tempurature of gases at nozzle throat: " + str(noz.T_t))
+    print("gas presure at nozzle throat: " + str(noz.P_t))
+    print("nozzle throat cross-sectional area: " + str(noz.A_t))
+    print("nozzle throat diameter: " + str(noz.D_t))
+    print("mach number: " + str(noz.M_e))
+    print("nozzle exit cross-sectional area: " + str(noz.A_e))
+    print("nozzle exit diameter: " + str(noz.D_e))
 
     print(bcolors.FAIL + "===========Combustion Chamber===========" + bcolors.ENDC)
     com = combustion_chamber(var, con, noz, "copper")
-    V_c = com.V_c
-    print("combustion chamber volume: " + str(V_c))
-    D_c = com.D_c
-    print("combustion chamber diameter: " + str(D_c))
-    A_c = com.A_c
-    print("combustion chamber area: " + str(A_c))
-    L_c = com.L_c
-    print("combustion chamber length: " + str(L_c))
-    t_w = com.t_w
-    print("combustion chamber wall thickness: " + str(t_w))
+    print("combustion chamber volume: " + str(com.V_c))
+    print("combustion chamber diameter: " + str(com.D_c))
+    print("combustion chamber area: " + str(com.A_c))
+    print("combustion chamber length: " + str(com.L_c))
+    print("combustion chamber wall thickness: " + str(com.t_w))
 
     print(bcolors.OKBLUE + "===========Engine Cooling===========" + bcolors.ENDC)
     eng_cool = engine_cooling(var, con, noz, com, "water")
-    A = eng_cool.A
-    print("heat transfer area: " + str(A))
-    q = eng_cool.q
-    print("average heat transfer rate for coolant: " + str(q))
-    Q = eng_cool.Q
-    print("total heat transferred: " + str(Q))
-    w_cool = eng_cool.w_cool
-    print("coolant flow rate: " + str(w_cool))
-    v_cool = eng_cool.v_cool
-    print("flow velocity of coolant: " + str(v_cool))
-    D_1 = eng_cool.D_1
-    print("outer diameter of the combustion chamber: " + str(D_1))
-    D_2 = eng_cool.D_2
-    print("inner diameter of cooling jacket: " + str(D_2))
-    delta_D = eng_cool.delta_D
-    print("annular flow passage width: " + str(delta_D))
+    print("heat transfer area: " + str(eng_cool.A))
+    print("average heat transfer rate for coolant: " + str(eng_cool.q))
+    print("total heat transferred: " + str(eng_cool.Q))
+    print("coolant flow rate: " + str(eng_cool.w_cool))
+    print("flow velocity of coolant: " + str(eng_cool.v_cool))
+    print("outer diameter of the combustion chamber: " + str(eng_cool.D_1))
+    print("inner diameter of cooling jacket: " + str(eng_cool.D_2))
+    print("annular flow passage width: " + str(eng_cool.delta_D))
 
 
 if __name__ == "__main__":
