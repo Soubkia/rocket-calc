@@ -275,9 +275,9 @@ class combustion_chamber:
 		L_c = V_c/(D_c * A_c)
 
 	Variables:
-		L_c = chamber length
-		D_c = chamber diameter (we assume this is five times the nozzle throat diameter)
-		A_c = the combustion chamber cross-sectional area
+		L_c = chamber length, in
+		D_c = chamber diameter, in (we assume this is five times the nozzle throat diameter)
+		A_c = the combustion chamber cross-sectional area, in^2
 
 	"""
 	def chamber_length(self, V_c, D_c, A_c):
