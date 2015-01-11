@@ -185,8 +185,8 @@ class nozzle:
 
 	Variables:
 		M_e = the ratio of the gas velocity to the local speed of sound (mach number) at the nozzle exit
-		P_c = the pressure in the combustion chamber
-		P_atm = atmospheric pressure (psi)
+		P_c = the pressure in the combustion chamber, psi
+		P_atm = atmospheric pressure, psi
 		y = heat capacity ratio or adiabatic index or ratio of specific heats
 
 	"""
@@ -198,8 +198,8 @@ class nozzle:
 		A_e = (A_t/M_e)*[(1 + ((y - 1)/(2))*M_e^2)/((y + 1)/(2))]^((y+1)/(2*(y-1)))
 
 	Variables:
-		A_e = the nozzle exit cross-sectional area corresponding to the exit Mach number resulting from the choice of chamber pressure <units needed>
-		A_t = nozzle throat cross-sectional area <units needed>
+		A_e = the nozzle exit cross-sectional area corresponding to the exit Mach number resulting from the choice of chamber pressure, in^2
+		A_t = nozzle throat cross-sectional area, in^2
 		M_e = the ratio of the gas velocity to the local speed of sound (mach number) at the nozzle exit
 		y = heat capacity ratio or adiabatic index or ratio of specific heats
 
@@ -212,8 +212,8 @@ class nozzle:
 		D_t = sqrt((4*A_t)/pi)
 
 	Variables:
-		D_t = nozzle throat diameter
-		A_t = nozzle throat cross-sectional area <units needed>
+		D_t = nozzle throat diameter, in
+		A_t = nozzle throat cross-sectional area, in^2
 
 	"""
 	def nozzle_throat_diameter(self, A_t):
@@ -224,8 +224,8 @@ class nozzle:
 		D_e = sqrt((4*A_e)/pi)
 
 	Variables:
-		D_e = nozzle exit diameter
-		A_e = the nozzle exit cross-sectional area corresponding to the exit Mach number resulting from the choice of chamber pressure <units needed>
+		D_e = nozzle exit diameter, in
+		A_e = the nozzle exit cross-sectional area corresponding to the exit Mach number resulting from the choice of chamber pressure, in^2
 
 	"""
 	def nozzle_exit_diameter(self, A_e):
@@ -234,12 +234,12 @@ class nozzle:
 class combustion_chamber:
 	"""
 
-	V_c = the volume of the combustion chamber
-	D_c = chamber diameter (we assume this is five times the nozzle throat diameter)
-	A_c = the combustion chamber cross-sectional area
-	L_c = chamber length
-	t_w = chamber wall thickness
-	S = allowable working stress on the combustion chamber wall (psi) based on material
+	V_c = the volume of the combustion chamber, in^3
+	D_c = chamber diameter (we assume this is five times the nozzle throat diameter), in
+	A_c = the combustion chamber cross-sectional area, in^2
+	L_c = chamber length, in
+	t_w = chamber wall thickness, in
+	S = allowable working stress on the combustion chamber wall (psi) based on material, psi
 	material = material combustion chamber is made of, only copper supported currently
 
 	"""
