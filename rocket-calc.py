@@ -262,9 +262,9 @@ class combustion_chamber:
 		L* = V_c/A_t
 
 	Variables:
-		L* = the chamber volume required for complete combustion (characteristic chamber length)
-		V_c = the chamber volume (including the converging section of the nozzle), in cubic inches
-		A_t = the nozzle throat area (in^2)
+		L* = the chamber volume required for complete combustion (characteristic chamber length), in
+		V_c = the chamber volume (including the converging section of the nozzle), in^3
+		A_t = the nozzle throat area, in^2
 
 	"""
 	def characteristic_chamber_length(self, V_c, A_t):
@@ -276,7 +276,7 @@ class combustion_chamber:
 
 	Variables:
 		L_c = chamber length, in
-		D_c = chamber diameter, in (we assume this is five times the nozzle throat diameter)
+		D_c = chamber diameter (we assume this is five times the nozzle throat diameter), in
 		A_c = the combustion chamber cross-sectional area, in^2
 
 	"""
@@ -288,8 +288,8 @@ class combustion_chamber:
 		A_c = (pi*D_c^2)/4
 
 	Variables:
-		A_c = the combustion chamber cross-sectional area
-		D_c = the combustion chamber diameter
+		A_c = the combustion chamber cross-sectional area, in^2
+		D_c = the combustion chamber diameter, in
 
 	"""
 	def combustion_chamber_cross_sectional_area(self, D_c):
@@ -300,9 +300,9 @@ class combustion_chamber:
 		V_c = A_c * L_c + convergent volume
 
 	Variables:
-		V_c = the volume of the combustion chamber
-		A_c = the combustion chamber cross-sectional area
-		L_c = length of the combustion chamber
+		V_c = the volume of the combustion chamber, in^3
+		A_c = the combustion chamber cross-sectional area, in^2
+		L_c = length of the combustion chamber, in
 
 	Note: If convergent volume is left out it approximates it to 1/10th the volume of the cylindrical portion chamber
 
@@ -315,9 +315,9 @@ class combustion_chamber:
 		V_c = L* A_t
 
 	Variables:
-		V_c = the volume of the combustion chamber
-		A_t = the nozzle throat area (in^2)
-		L* = the chamber volume required for complete combustion (characteristic chamber length)
+		V_c = the volume of the combustion chamber, in^3
+		A_t = the nozzle throat area, in^2
+		L* = the chamber volume required for complete combustion (characteristic chamber length), in
 
 	"""
 	def combustion_chamber_volume(self, A_t, L):
@@ -329,9 +329,9 @@ class combustion_chamber:
 
 	Variables:
 		S = working stress on the combustion chamber wall
-		P = the pressure in the combustion chamber (neglecting the effect of coolant pressure on the outside of the shell)
-		D = the mean diameter of the cylinder
-		t_w = the thickness of the cylinder wall
+		P = the pressure in the combustion chamber (neglecting the effect of coolant pressure on the outside of the shell), psi
+		D = the mean diameter of the cylinder, in
+		t_w = the thickness of the cylinder wall, in
 
 	Note: Chamber pressure is usually a controlled aspect of the design 
 
@@ -345,9 +345,9 @@ class combustion_chamber:
 
 	Variables:
 		t_w = the thickness of the cylinder wall
-		P = the pressure in the combustion chamber (neglecting the effect of coolant pressure on the outside of the shell)
-		D = the mean diameter of the cylinder
-		S = the allowable working stress (psi) based on the material of the chamber
+		P = the pressure in the combustion chamber (neglecting the effect of coolant pressure on the outside of the shell), psi
+		D = the mean diameter of the cylinder, in
+		S = the allowable working stress (psi) based on the material of the chamber, psi
 
 	Note: This is the minimum thickness since welding factors and design considerations (such as O-ring grooves, etc.) will 
 	usually require walls thicker than those indication by the stress equation
