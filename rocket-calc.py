@@ -39,6 +39,9 @@ class variables:
 	L* = the chamber volume required for complete combustion (characteristic chamber length)
 	F = thrust
 	I_sp = specific impulse performance of fuel oxidizer combination as a result of chamber pressure and mixture ratio, seconds
+	#TODO: C_d = orifice discharge coefficient (constant based on injector)
+	#TODO: delta_P_injector = pressure drop across orifice, lb/ft2
+	#TODO: rho_f = density of propellant, lb/ft3
 
 	"""
 	r, P_c, T_c, L, F, I_sp = None, None, None, None, None, None
@@ -424,10 +427,10 @@ class engine_cooling: #This may require some organizational rethinking. Maybe co
 		A = pi (D_c + 2*t_w)(L_c) + area of nozzle cone
 
 	Variables:
-		A = heat transfer area
-		D_c = combustion chamber diameter
-		t_w = combustion chamber wall thickness
-		L_c = combustion chamber length
+		A = heat transfer area, in^2
+		D_c = combustion chamber diameter, in
+		t_w = combustion chamber wall thickness, in
+		L_c = combustion chamber length, in
 
 	Note: the area of the nozzle cone up to the throat can be assumed to be about 10 percent of the chamber surface area
 	if it is not known 
@@ -494,20 +497,45 @@ class engine_cooling: #This may require some organizational rethinking. Maybe co
 class injector:
 	"""
 
+	C_d = orifice discharge coefficient (constant based on injector)
+	v = injection velocity
+
+	"""
+
+	v = None
+
+	"""
+
 	Design Equation:
-		w = C_d * A sqrt(2 * g_c * rho * delta_P)
+		w = C_d * A sqrt(2 * g_c * rho_f * delta_P)
 
 	Variables:
 		w = propellant flow rate, lb/sec
 		C_d = orifice discharge coefficient
 		A = area of orifice, ft^2
 		g_c = gravitational constant, 32.2 ft/sec^2
-		rho = density of propellant, lb/ft^3
+		rho_f = density of propellant, lb/ft^3
 		delta_P = pressure drop across orifice, lb/ft^2
 
 	"""
-	def propellant_flow_rate(self, A, rho, delta_P, C_d=0.6):
+	def propellant_flow_rate(self, A, rho_f, delta_P, C_d=0.7):
 		return (C_d*A)*math.sqrt(2*32.2*rho*delta_P)
+	"""
+	
+	Design: Equation:
+		A = (w_f)/((C_d) * (2*g_c * rho_f * delta_P_injector)^(1/2))
+
+	Variables:
+		A = area of orifice, ft^2
+		w_f = propellant flow rate, lb/sec
+		C_d = orifice discharge coefficient
+		g_c = gravitational constant, 32.2 ft/sec2
+		rho_f = density of propellant, lb/ft3
+		delta_P_injector = pressure drop across orifice, lb/ft2
+
+	"""
+	def injector_flow_area(self, w_f, C_d=0.7, rho_f, delta_P_injector):
+		return (w_f)/((C_d)*math.sqrt(2*g_c*rho_f*delta_P_injector))
 	"""
 
 	Design Equation:
@@ -571,7 +599,7 @@ def main():
     print("combustion chamber length: " + str(com.L_c) + " in")
     print("combustion chamber wall thickness: " + str(com.t_w) + " in")
 
-    print(bcolors.OKBLUE + "===========Engine Cooling===========" + bcolors.ENDC)
+    print(bcolors.OKBLUE + "===========Engine Cooling===========" + bcolors.ENDC) #This looks like it has some problems
     eng_cool = engine_cooling(var, con, noz, com, "water")
     print("heat transfer area: " + str(eng_cool.A))
     print("average heat transfer rate for coolant: " + str(eng_cool.q))
@@ -581,6 +609,8 @@ def main():
     print("outer diameter of the combustion chamber: " + str(eng_cool.D_1))
     print("inner diameter of cooling jacket: " + str(eng_cool.D_2))
     print("annular flow passage width: " + str(eng_cool.delta_D))
+
+    print(bcolors.WARNING + "===========Injector===========" + bcolors.ENDC)
 
 
 if __name__ == "__main__":
