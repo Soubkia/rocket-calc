@@ -1,6 +1,7 @@
 #rocket-calc.py
 """
 
+TODO: Everything needs to be reorganized to fit with the Click api
 Script for Basic Calulations
 
 Usage:
@@ -493,16 +494,22 @@ class engine_cooling: #This may require some organizational rethinking. Maybe co
 	def cooling_jacket_inner_diameter(self, w_cool, v_cool, rho_cool, D_1):
 		return math.sqrt(((4*w_cool)/(v_cool*rho_cool*3.14)) + (D_1/12)**2)*12 #Convert from ft to inches
 
-
-class injector:
+class injector: #Not Complete
 	"""
 
+	A_impinging = flow area for fuel injection if an impinging jet injector is chosen, ft^2
+	A_spray = flow area for fuel injection if a spray nozzle injector is chosen, ft^2
+	n_f = number of fuel injection holes
+	D_f = diameter of fuel injection holes based on n
+	n_o = number of oxidizer injection holes
+	D_o = diameter of oxidizer injection holes based on n
 	C_d = orifice discharge coefficient (constant based on injector)
-	v = injection velocity
+	v_o = oxidizer injection velocity, ft/sec
+	v_f = fuel injection velocity, ft/sec
 
 	"""
 
-	v = None
+	A_impinging, A_spray, n_f, D_f, n_o, D_o, C_d, v_o, v_f = None, None, None, None, None, None, None, None, None
 
 	"""
 
@@ -522,11 +529,11 @@ class injector:
 		return (C_d*A)*math.sqrt(2*32.2*rho*delta_P)
 	"""
 	
-	Design: Equation:
-		A = (w_f)/((C_d) * (2*g_c * rho_f * delta_P_injector)^(1/2))
+	Design Equation:
+		A_impinging = (w_f)/((C_d) * (2*g_c * rho_f * delta_P_injector)^(1/2))
 
 	Variables:
-		A = area of orifice, ft^2
+		A_impinging = flow area for fuel injection if an impinging jet injector is chosen, ft^2
 		w_f = propellant flow rate, lb/sec
 		C_d = orifice discharge coefficient
 		g_c = gravitational constant, 32.2 ft/sec2
@@ -534,8 +541,31 @@ class injector:
 		delta_P_injector = pressure drop across orifice, lb/ft2
 
 	"""
-	def injector_flow_area(self, w_f, C_d=0.7, rho_f, delta_P_injector):
+	def injector_flow_area_impinging(self, w_f, rho_f, delta_P_injector, C_d=0.7):
 		return (w_f)/((C_d)*math.sqrt(2*g_c*rho_f*delta_P_injector))
+	"""
+
+	Design Equation:
+		A_spray = w_o/rho_o*v_o
+
+	Variables:
+		A_spray = flow area for fuel injection if a spray nozzle injector is chosen, ft^2
+		w_o = oxidizer flow rate, lb/sec
+		rho_o = density of oxidizer inside injector, lb/ft3
+		v_o = oxidizer injection velocity, ft/sec
+
+	Related Equation: The Ideal Gas Law at constant tempurature is used to find rho_f
+		rho_o_inside = rho_o_outside * ( (delta_P_injector + P_c)/(P_atm) )
+
+	Variables:
+		delta_P_injector = pressure drop across orifice, lb/ft2
+		P_c = chamber pressure, psi
+		P_atm = atmospheric pressure, psi
+
+	"""
+	def injector_flow_area_spray(self, w_o, delta_P_injector, P_c, v_o, rho_o=0.083, P_atm=14.7):
+		return (w_o)/((rho_o*((delta_P_injector+P_c)/(P_atm)))*(v_o))
+
 	"""
 
 	Design Equation:
@@ -546,7 +576,7 @@ class injector:
 		C_d = orifice discharge coefficient
 		g_c = gravitational constant, 32.2 ft/sec^2
 		delta_P = pressure drop across orifice, lb/ft^2
-		rho = density of propellant, lb/ft^3
+		rho_f = density of propellant, lb/ft^3
 
 	"""
 	def injection_velocity(self, delta_P, rho, C_d=0.6):
