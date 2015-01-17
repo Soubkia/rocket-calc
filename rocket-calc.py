@@ -511,6 +511,9 @@ class injector: #Not Complete
 
 	A_impinging, A_spray, n_f, D_f, n_o, D_o, C_d, v_o, v_f = None, None, None, None, None, None, None, None, None
 
+	def __init__(self, variables, constants, nozzle, combustion_chamber, engine_cooling):
+		
+
 	"""
 
 	Design Equation:
