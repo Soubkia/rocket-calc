@@ -497,8 +497,8 @@ class engine_cooling: #This may require some organizational rethinking. Maybe co
 class injector: #Not Complete
 	"""
 
-	A_impinging = flow area for fuel injection if an impinging jet injector is chosen, ft^2
-	A_spray = flow area for fuel injection if a spray nozzle injector is chosen, ft^2
+	A_impinging = flow area for fluid injection if an impinging jet injector is chosen, ft^2
+	A_spray = flow area for fluid injection if a spray nozzle injector is chosen, ft^2
 	n_f = number of fuel injection holes
 	D_f = diameter of fuel injection holes based on n
 	n_o = number of oxidizer injection holes
@@ -507,12 +507,15 @@ class injector: #Not Complete
 	v_o = oxidizer injection velocity, ft/sec
 	v_f = fuel injection velocity, ft/sec
 
+	Note: This section makes a lot of assumptions and I need to document them all...
+		fuel = gasoline
+
 	"""
 
 	A_impinging, A_spray, n_f, D_f, n_o, D_o, C_d, v_o, v_f = None, None, None, None, None, None, None, None, None
 
-	def __init__(self, variables, constants, nozzle, combustion_chamber, engine_cooling):
-		
+	def __init__(self, variables, constants, nozzle, combustion_chamber, engine_cooling, n_f=2, n_o=4, rho_f=44.5, delta_P_injector=100):
+		self.A_impinging = self.injector_flow_area_impinging(variables.w_f, rho_f, delta_P_injector)
 
 	"""
 
@@ -545,7 +548,7 @@ class injector: #Not Complete
 
 	"""
 	def injector_flow_area_impinging(self, w_f, rho_f, delta_P_injector, C_d=0.7):
-		return (w_f)/((C_d)*math.sqrt(2*g_c*rho_f*delta_P_injector))
+		return (w_f)/((C_d)*math.sqrt(2*32.2*rho_f*delta_P_injector))
 	"""
 
 	Design Equation:
@@ -644,7 +647,7 @@ def main():
     print("annular flow passage width: " + str(eng_cool.delta_D))
 
     print(bcolors.WARNING + "===========Injector===========" + bcolors.ENDC)
-
+    inj = injector(var, con, noz, com, eng_cool)
 
 if __name__ == "__main__":
     main()
