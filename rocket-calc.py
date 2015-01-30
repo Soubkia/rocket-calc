@@ -623,7 +623,7 @@ def main():
     print("gas presure at nozzle throat: " + str(noz.P_t) + " psi")
     print("nozzle throat cross-sectional area: " + str(noz.A_t) + " in^2")
     print("nozzle throat diameter: " + str(noz.D_t) + " in")
-    print("mach number: " + str(noz.M_e) + " (unitless?)")
+    print("mach number: " + str(noz.M_e) + " (unitless)")
     print("nozzle exit cross-sectional area: " + str(noz.A_e) + " in^2")
     print("nozzle exit diameter: " + str(noz.D_e) + " in")
 
