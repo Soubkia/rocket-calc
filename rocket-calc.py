@@ -43,6 +43,11 @@ class variables:
 	#TODO: C_d = orifice discharge coefficient (constant based on injector)
 	#TODO: delta_P_injector = pressure drop across orifice, lb/ft2
 	#TODO: rho_f = density of propellant, lb/ft3
+	#TODO: coolant used
+	#TODO: coolant_tempurature_rise
+	#TODO: v_cool
+	#TODO: oxidizer used
+	#TODO: fuel used
 
 	"""
 	r, P_c, T_c, L, F, I_sp = None, None, None, None, None, None
