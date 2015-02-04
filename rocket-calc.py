@@ -15,9 +15,9 @@ import math
 class constants:
 	"""
 
-	R = gas constant <units needed>
+	R = gas constant <units needed> #This needs to be calculated (https://www.risacher.org/rocket/eqns.html)
 	y = heat capacity ratio or adiabatic index or ratio of specific heats
-	g_c = earth gravitational constant <units needed>
+	g_c = earth gravitational constant, ft/s^2
 	P_atm = atmospheric pressure, psi
 
 	"""
@@ -103,20 +103,6 @@ class variables:
 	def fuel_flow_rate(self):
 		return (self.total_flow_rate())/(self.r + 1)
 
-# class variables:
-# 	"""
-
-# 	Q = total heat transferred, Btu/sec
-# 	q = average heat transfer rate of chamber, Btu/in2-sec
-# 	A = heat transfer area, in2
-# 	w_w = coolant flow rate, lb/sec
-# 	c_p = specific heat of coolant, Btu/lb°F
-# 	T = temperature of coolant leaving jacket, °F
-# 	T_i = temperature of coolant entering jacket, °F
-
-# 	"""
-# 	Q, q, A, w_w, c_p, T, T_i = None, None, None, None, None, None, None
-
 class nozzle:
 	"""
 
@@ -145,18 +131,18 @@ class nozzle:
 		A_t = (w_t/P_t) * sqrt((R*T_t)/(y*g_c))
 
 	Variables:
-		A_t = nozzle throat cross-sectional area <units needed>
+		A_t = nozzle throat cross-sectional area, in^2
 		w_t = total weight flow (fuel + oxidizer) lb/sec
 			w_o = (w_t * r)/(r + 1) lb/sec
 			w_f = (w_t)/(r + 1) lb/sec
 			w_t = w_o + w_f lb/sec
-		P_t = gas pressure at the nozzle throat <units needed>
+		P_t = gas pressure at the nozzle throat, psi
 			<insert equations>
 		R = gas constant <units needed>
 		T_t = temperature of the gases at the nozzle throat <units needed>
 			<insert equations>
 		y = heat capacity ratio or adiabatic index or ratio of specific heats
-		g_c = earth gravitational constant <units needed>
+		g_c = earth gravitational constant, ft/sec^2
 
 	"""
 	def nozzle_throat_cross_sectional_area(self, w_t, P_t, T_t, constants):
