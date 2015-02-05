@@ -15,7 +15,7 @@ import math
 class constants:
 	"""
 
-	R = gas constant <units needed> #This needs to be calculated (https://www.risacher.org/rocket/eqns.html)
+	R = gas constant <units needed> #This needs to be calculated for the f/o mixture (https://www.risacher.org/rocket/eqns.html)
 	y = heat capacity ratio or adiabatic index or ratio of specific heats
 	g_c = earth gravitational constant, ft/s^2
 	P_atm = atmospheric pressure, psi
@@ -106,11 +106,11 @@ class variables:
 class nozzle:
 	"""
 
-	T_t = temperature of the gases at the nozzle throat <units needed>
-	P_t = gas pressure at the nozzle throat
-	A_t = nozzle throat cross-sectional area <units needed>
+	T_t = temperature of the gases at the nozzle throat, °R
+	P_t = gas pressure at the nozzle throat, psi
+	A_t = nozzle throat cross-sectional area, in^2
 	D_t = nozzle throat diameter, in
-	A_e = the nozzle exit cross-sectional area corresponding to the exit Mach number resulting from the choice of chamber pressure <units needed>
+	A_e = the nozzle exit cross-sectional area corresponding to the exit Mach number resulting from the choice of chamber pressure, in^2
 	D_e = nozzle exit diameter, in
 
 	"""
@@ -153,7 +153,7 @@ class nozzle:
 		T_t = T_c [1 / (1 + ((y - 1)/2))]
 
 	Variables:
-		T_t = temperature of the gases at the nozzle throat <units needed>
+		T_t = temperature of the gases at the nozzle throat, °R
 		T_c = the combustion chamber flame temperature in degrees Rankine (°R)
 		y = heat capacity ratio or adiabatic index or ratio of specific heats
 
@@ -166,8 +166,8 @@ class nozzle:
 		P_t = P_c * [ 1 + (y-1)/(2) ]^(-(y)/(y-1))
 
 	Variables:
-		P_t = gas pressure at the nozzle throat
-		P_c = pressure in the combustion chamber <units needed>
+		P_t = gas pressure at the nozzle throat, psi
+		P_c = pressure in the combustion chamber, psi
 		y = heat capacity ratio or adiabatic index or ratio of specific heats
 
 	"""
@@ -323,7 +323,7 @@ class combustion_chamber:
 		S = P*D/2*t_w
 
 	Variables:
-		S = working stress on the combustion chamber wall
+		S = working stress on the combustion chamber wall, psi
 		P = the pressure in the combustion chamber (neglecting the effect of coolant pressure on the outside of the shell), psi
 		D = the mean diameter of the cylinder, in
 		t_w = the thickness of the cylinder wall, in
@@ -339,7 +339,7 @@ class combustion_chamber:
 		t_w = (P*D)/(2*S)
 
 	Variables:
-		t_w = the thickness of the cylinder wall
+		t_w = the thickness of the cylinder wall, in
 		P = the pressure in the combustion chamber (neglecting the effect of coolant pressure on the outside of the shell), psi
 		D = the mean diameter of the cylinder, in
 		S = the allowable working stress (psi) based on the material of the chamber, psi
